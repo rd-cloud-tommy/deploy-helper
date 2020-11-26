@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"deploy-helper/cmd/github"
 	"fmt"
 	"os"
 
@@ -22,4 +23,5 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(allowTraffic)
 	rootCmd.AddCommand(blockTraffic)
+	rootCmd.AddCommand(github.NewGithubCmd())
 }
