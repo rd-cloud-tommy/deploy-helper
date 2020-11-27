@@ -5,13 +5,15 @@ import (
 )
 
 var (
-	inputToken string
-	inputOwner string
-	inputRepo  string
-	inputTag   string
+	inputToken        string
+	inputOwner        string
+	inputRepo         string
+	inputTag          string
+	inputSlackWebhook string
+	inputSlackChannel string
 )
 
-// NewCmd return newCommand
+// NewGithubCmd return newCommand
 func NewGithubCmd() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "github",
@@ -20,6 +22,6 @@ func NewGithubCmd() *cobra.Command {
 
 	command.PersistentFlags().StringVarP(&inputToken, "token", "t", "", "github oauth token")
 
-	command.AddCommand(newReleaseMsgCmd())
+	command.AddCommand(newReleaseNotifyCmd())
 	return command
 }
