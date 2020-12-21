@@ -5,6 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
+// IfaceEc2metadata interface
+//go:generate mockery --name IfaceEc2metadata --output ../mocks
+type IfaceEc2metadata interface {
+	GetInstanceID() (string, error)
+	GetRegion() (string, error)
+}
+
 // Client struct
 type Client struct {
 	svc *ec2metadata.EC2Metadata
