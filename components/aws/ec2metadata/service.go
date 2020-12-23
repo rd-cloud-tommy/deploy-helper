@@ -14,7 +14,7 @@ type IfaceEc2metadata interface {
 
 // Client struct
 type Client struct {
-	svc *ec2metadata.EC2Metadata
+	svc Iface3PartyEC2Metadata
 }
 
 // New getClient

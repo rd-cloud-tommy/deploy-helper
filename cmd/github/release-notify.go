@@ -1,13 +1,11 @@
 package github
 
 import (
-	"context"
+	"deploy-helper/components/aws/github"
 	"fmt"
 
-	"github.com/google/go-github/github"
 	"github.com/nlopes/slack"
 	"github.com/spf13/cobra"
-	"golang.org/x/oauth2"
 )
 
 func newReleaseNotifyCmd() *cobra.Command {
@@ -15,15 +13,8 @@ func newReleaseNotifyCmd() *cobra.Command {
 		Use:   "release-notify",
 		Short: "get release body and set notify",
 		Run: func(cmd *cobra.Command, args []string) {
-			ctx := context.Background()
-			ts := oauth2.StaticTokenSource(
-				&oauth2.Token{AccessToken: inputToken},
-			)
-			tc := oauth2.NewClient(ctx, ts)
-
-			client := github.NewClient(tc)
-
-			repoRelease, _, err := client.Repositories.GetReleaseByTag(ctx, inputOwner, inputRepo, inputTag)
+			githubClient := github.New(inputToken)
+			repoRelease, err := githubClient.GetReleaseByTag(inputOwner, inputRepo, inputTag)
 			if err != nil {
 				panic(err)
 			}
@@ -38,7 +29,6 @@ func newReleaseNotifyCmd() *cobra.Command {
 			} else {
 				fmt.Println(repoRelease.GetBody())
 			}
-
 		},
 	}
 
