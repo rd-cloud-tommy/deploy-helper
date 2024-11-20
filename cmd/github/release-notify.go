@@ -21,9 +21,15 @@ func newReleaseNotifyCmd() *cobra.Command {
 
 			// sent message to slack
 			if inputSlackChannel != "" && inputSlackWebhook != "" {
+				var text string
+				if inputProject != "" {
+					text = fmt.Sprintf("%s deploy success. project: %s, version: %s <%s|Click here> for details!\n%s", inputRepo, inputProject, inputTag, repoRelease.GetHTMLURL(), repoRelease.GetBody())
+				} else {
+					text = fmt.Sprintf("%s deploy success. version: %s <%s|Click here> for details!\n%s", inputRepo, inputTag, repoRelease.GetHTMLURL(), repoRelease.GetBody())
+				}
 				msg := &slack.WebhookMessage{
 					Channel: inputSlackChannel,
-					Text:    fmt.Sprintf("%s deploy success. version: %s <%s|Click here> for details!\n%s", inputRepo, inputTag, repoRelease.GetHTMLURL(), repoRelease.GetBody()),
+					Text:    text,
 				}
 				slack.PostWebhook(inputSlackWebhook, msg)
 			} else {
@@ -35,6 +41,7 @@ func newReleaseNotifyCmd() *cobra.Command {
 	command.Flags().StringVarP(&inputOwner, "owner", "", "", "github owner(required)")
 	command.Flags().StringVarP(&inputRepo, "repo", "", "", "github repo(required)")
 	command.Flags().StringVarP(&inputTag, "tag", "", "", "github tag(required)")
+	command.Flags().StringVarP(&inputProject, "project", "", "", "project")
 	command.Flags().StringVarP(&inputSlackWebhook, "slackWebhook", "", "", "slack webhook")
 	command.Flags().StringVarP(&inputSlackChannel, "slackChannel", "", "", "slack channel")
 	command.MarkFlagRequired("owner")
