@@ -9,6 +9,7 @@ var (
 	inputOwner        string
 	inputRepo         string
 	inputTag          string
+	inputProject      string
 	inputSlackWebhook string
 	inputSlackChannel string
 )
