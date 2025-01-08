@@ -14,15 +14,15 @@ var (
 	inputSlackChannel string
 )
 
-// NewGithubCmd return newCommand
+// NewGithubCmd returns a new GitHub command
 func NewGithubCmd() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "github",
-		Short: "github helper function",
+		Short: "GitHub helper functions",
 	}
 
-	command.PersistentFlags().StringVarP(&inputToken, "token", "t", "", "github oauth token")
-
+	command.PersistentFlags().StringVarP(&inputToken, "token", "t", "", "GitHub OAuth token")
 	command.AddCommand(newReleaseNotifyCmd())
+
 	return command
 }
