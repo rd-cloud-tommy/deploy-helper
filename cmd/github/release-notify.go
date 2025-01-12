@@ -19,8 +19,10 @@ func newReleaseNotifyCmd() *cobra.Command {
 	command.Flags().StringVarP(&inputRepo, "repo", "", "", "github repo(required)")
 	command.Flags().StringVarP(&inputTag, "tag", "", "", "github tag(required)")
 	command.Flags().StringVarP(&inputProject, "project", "", "", "project")
+	command.Flags().StringVarP(&inputDomain, "domain", "", "", "service domain")
 	command.Flags().StringVarP(&inputSlackWebhook, "slackWebhook", "", "", "slack webhook")
 	command.Flags().StringVarP(&inputSlackChannel, "slackChannel", "", "", "slack channel")
+	command.Flags().BoolVarP(&dryRun, "dry-run", "", false, "dry-run mode for local testing")
 	command.MarkFlagRequired("owner")
 	command.MarkFlagRequired("repo")
 	command.MarkFlagRequired("tag")
@@ -37,38 +39,41 @@ func runReleaseNotifyCmd(cmd *cobra.Command, args []string) {
 	}
 
 	if inputSlackChannel != "" && inputSlackWebhook != "" {
-		sendSlackNotification(repoRelease)
+
+		// Set inputProject to inputRepo if inputProject is not set
+		if inputProject == "" {
+			inputProject = inputRepo
+		}
+	
+		text := fmt.Sprintf(
+			"%s deployment successful. \nProject: %s \nVersion: %s \nDomain: %s \n<%s|Click here> for details! \n\n%s",
+			inputRepo,
+			inputProject,
+			inputTag,
+			inputDomain,
+			repoRelease.GetHTMLURL(),
+			repoRelease.GetBody(),
+		)
+
+		if dryRun {
+			fmt.Println(text)
+		} else {
+			sendSlackNotification(text)
+		}
 	} else {
 		fmt.Println(repoRelease.GetBody())
 	}
 }
 
-func sendSlackNotification(repoRelease *github.RepositoryRelease) {
-	var text string
-
-	if inputProject != "" {
-		text = fmt.Sprintf(
-			"%s deploy success. project: %s, version: %s <%s|Click here> for details!\n%s",
-			inputRepo,
-			inputProject,
-			inputTag,
-			repoRelease.GetHTMLURL(),
-			repoRelease.GetBody()
-		)
-	} else {
-		text = fmt.Sprintf(
-			"%s deploy success. version: %s <%s|Click here> for details!\n%s",
-			inputRepo,
-			inputTag,
-			repoRelease.GetHTMLURL(),
-			repoRelease.GetBody()
-		)
-	}
-
+func sendSlackNotification(text string) {
 	msg := &slack.WebhookMessage{
 		Channel: inputSlackChannel,
 		Text:    text,
 	}
 
-	slack.PostWebhook(inputSlackWebhook, msg)
+	err := slack.PostWebhook(inputSlackWebhook, msg)
+
+	if err != nil {
+		fmt.Printf("Failed to send slack notification: %v\n", err)
+	}
 }

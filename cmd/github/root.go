@@ -10,15 +10,17 @@ var (
 	inputRepo         string
 	inputTag          string
 	inputProject      string
+	inputDomain       string
 	inputSlackWebhook string
 	inputSlackChannel string
+	dryRun            bool
 )
 
-// NewGithubCmd returns a new GitHub command
+// NewGithubCmd return newCommand
 func NewGithubCmd() *cobra.Command {
 	command := &cobra.Command{
 		Use:   "github",
-		Short: "GitHub helper functions",
+		Short: "github helper function",
 	}
 
 	command.PersistentFlags().StringVarP(&inputToken, "token", "t", "", "GitHub OAuth token")
